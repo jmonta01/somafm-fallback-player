@@ -5,6 +5,23 @@ package com.somafm.controls {
 	import flash.events.MouseEvent;
 	
 	public class ControlBar extends Sprite {
+		
+		[Embed(source="/assets/glyphicons_173_play.png")]
+		public static var PlayIcon:Class;
+		
+		[Embed(source="/assets/glyphicons_174_pause.png")]
+		public static var PauseIcon:Class;
+		
+		[Embed(source="/assets/glyphicons_182_mute.png")]
+		public static var MuteIcon:Class;
+		
+		[Embed(source="/assets/glyphicons_183_volume_down.png")]
+		public static var VolDownIcon:Class;
+		
+		[Embed(source="/assets/glyphicons_184_volume_up.png")]
+		public static var VolUpIcon:Class;
+
+		
 		//------------------
 		// public vars
 		//------------------			
@@ -13,6 +30,16 @@ package com.somafm.controls {
 		public var hGap:Number = 10;
 		public var marginLeft:Number = 0;
 		public var marginRight:Number = 0;
+		
+		public function set isPlaying(val:Boolean):void {
+			_isPlaying = val;
+			redraw();
+		}
+		
+		public function set isMuted(val:Boolean):void {
+			_isMuted = val;
+			redraw();
+		}
 		
 		//------------------
 		// private vars
@@ -25,7 +52,7 @@ package com.somafm.controls {
 		private var _volSlider:VolumeSlider;
 		private var _maxBtn:Button;
 		
-		private var _isPlaying:Boolean = true;
+		private var _isPlaying:Boolean = false;
 		private var _isMuted:Boolean = false;
 		
 		private var _w:Number;
@@ -38,31 +65,31 @@ package com.somafm.controls {
 			super();	
 			
 			_playBtn = new Button();
+			_playBtn.icon = new PlayIcon();
 			_playBtn.addEventListener(MouseEvent.CLICK, _handlePlayClicked);
-			_playBtn.backgroundColor = 0xff0000;
 			addChild(_playBtn);
 			
 			_pauseBtn = new Button();
+			_pauseBtn.icon = new PauseIcon();
 			_pauseBtn.addEventListener(MouseEvent.CLICK, _handlePauseClicked);
-			_pauseBtn.backgroundColor = 0x330000;
 			addChild(_pauseBtn);
 			
 			_muteVolBtn = new Button();
+			_muteVolBtn.icon = new VolDownIcon();
 			_muteVolBtn.addEventListener(MouseEvent.CLICK, _handleMuteClicked);
-			_muteVolBtn.backgroundColor = 0x00ff00;
 			addChild(_muteVolBtn);
 			
 			_unmuteVolBtn = new Button();
+			_unmuteVolBtn.icon = new MuteIcon();
 			_unmuteVolBtn.addEventListener(MouseEvent.CLICK, _handleUnmuteClicked);
-			_unmuteVolBtn.backgroundColor = 0x003300;
 			addChild(_unmuteVolBtn);
 			
 			_volSlider = new VolumeSlider();
 			addChild(_volSlider);
 			
 			_maxBtn = new Button();
+			_maxBtn.icon = new VolUpIcon();
 			_maxBtn.addEventListener(MouseEvent.CLICK, _handleMaxVolClicked);
-			_maxBtn.backgroundColor = 0x0000ff;
 			addChild(_maxBtn);
 			
 			redraw(w, h);
@@ -140,7 +167,7 @@ package com.somafm.controls {
 		}
 		
 		private function _handleMaxVolClicked(e:MouseEvent):void {
-			_isMuted = true;
+			_isMuted = false;
 			dispatchEvent(new ControlEvent(ControlEvent.MAX_VOL));
 			redraw();
 		}

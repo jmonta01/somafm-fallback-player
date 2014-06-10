@@ -1,12 +1,13 @@
 package com.somafm {
+	import com.somafm.audio.AudioPlayer;
 	import com.somafm.controls.ControlBar;
 	import com.somafm.events.ControlEvent;
+	import com.somafm.events.PlayerEvent;
 	
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
-	import com.somafm.audio.AudioPlayer;
 	
 	public class Player extends Sprite {
 		//------------------
@@ -34,9 +35,10 @@ package com.somafm {
 			this.stage.align = StageAlign.TOP_LEFT;
 			this.stage.addEventListener(Event.RESIZE, _handleRedraw);
 			
-			_player = new AudioPlayer(stage.stageWidth, 100);
+			_player = new AudioPlayer();
+			_player.addEventListener(PlayerEvent.PLAYING_CHANGED, _handlePlayerChanged);
+			
 			_player.loadStreams(_streams);
-			addChild(_player);
 			
 			_controlBar = new ControlBar(stage.stageWidth, stage.stageHeight-100);
 			_controlBar.y = 100;
@@ -58,11 +60,23 @@ package com.somafm {
 		//------------------
 		
 		private function _handleRedraw(e:Event):void {
-			_controlBar.redraw(stage.stageWidth, stage.stageHeight-100);
+			_controlBar.redraw(stage.stageWidth, stage.stageHeight);
+		}
+		
+		private function _handlePlayerChanged(e:PlayerEvent):void {
+			switch (e.type) {
+				case PlayerEvent.PLAYING_CHANGED:
+					_controlBar.isPlaying = _player.isPlaying;
+					break;
+				case PlayerEvent.MUTE_CHANGED:
+					break;
+				case PlayerEvent.VOLUME_CHANGED:
+					break;
+			}
 		}
 		
 		private function _handlePlayEvent(e:ControlEvent):void {
-			_player.play();
+			_player.togglePause(false);
 		}
 		
 		private function _handlePauseEvent(e:ControlEvent):void {
@@ -82,7 +96,7 @@ package com.somafm {
 		}
 		
 		private function _handlemaxVolEvent(e:ControlEvent):void {
-			_player.setVol(1);	
+			_player.setVol(1);
 		}
 		
 		private function _handleSetVolEvent(e:ControlEvent):void {

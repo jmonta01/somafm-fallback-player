@@ -1,6 +1,8 @@
 package com.somafm.controls {
-	import flash.display.BitmapData;
+	import flash.display.Bitmap;
 	import flash.display.Sprite;
+	import flash.events.MouseEvent;
+	import flash.geom.ColorTransform;
 	
 	public class Button extends Sprite {
 		//------------------
@@ -28,11 +30,11 @@ package com.somafm.controls {
 			redraw();
 		}
 		
-		public function get icon():BitmapData {
+		public function get icon():Bitmap {
 			return _icon;
 		}
 		
-		public function set icon(val:BitmapData):void {
+		public function set icon(val:Bitmap):void {
 			if (_icon == val) {
 				return;
 			}
@@ -44,16 +46,30 @@ package com.somafm.controls {
 		//------------------
 		// private vars
 		//------------------
-		private var _backgroundColor:uint = 0xCCCCCC;
-		private var _backgroundAlpha:Number = 1;
-		private var _icon:BitmapData;
-
+		private var _iconColor:uint = 0x767676;
+		private var _iconOverColor:uint = 0xFFFFFF;
 		
+		private var _backgroundColor:uint = 0xCCCCCC;
+		private var _backgroundAlpha:Number = 0;
+		private var _icon:Bitmap;
+
+		private var _overTransform:ColorTransform;
+		private var _baseTransform:ColorTransform;
 		//------------------
 		// constructor
 		//------------------
 		public function Button() {
 			super();
+			
+			_baseTransform = new ColorTransform();
+			_baseTransform.color = _iconColor;
+			
+			_overTransform = new ColorTransform();
+			_overTransform.color = _iconOverColor;
+			
+			addEventListener(MouseEvent.MOUSE_OVER, _handleMouseOver);
+			addEventListener(MouseEvent.MOUSE_OUT, _handleMouseOut);
+			
 			this.buttonMode = true;
 			redraw();
 		}
@@ -67,13 +83,32 @@ package com.somafm.controls {
 			this.graphics.drawRect(x, y, 50, 50);
 			this.graphics.endFill();
 			
+			if (_icon) {
+				if (!contains(_icon)) {
+					addChild(_icon);
+					_icon.transform.colorTransform = _baseTransform;
+				}
+				_icon.x = (width - _icon.width)/2;
+				_icon.y = (height - _icon.height)/2;
+			}
+			
 			
 		}
 		
 		//------------------
 		// private functions
 		//------------------
+		private function _handleMouseOver(e:MouseEvent):void {
+			if (_icon) {
+				_icon.transform.colorTransform = _overTransform;
+			}
+		}
 		
+		private function _handleMouseOut(e:MouseEvent):void {
+			if (_icon) {
+				_icon.transform.colorTransform = _baseTransform		
+			}			
+		}
 
 	}
 }
