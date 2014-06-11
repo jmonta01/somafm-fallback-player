@@ -8,6 +8,7 @@ package com.somafm {
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.external.ExternalInterface;
 	
 	public class Player extends Sprite {
 		//------------------
@@ -19,12 +20,6 @@ package com.somafm {
 		private var _width:Number;
 		private var _height:Number;
 		
-		private var _streams:Array = [
-				"http://uwstream1.somafm.com:80/;",
-				"http://xstream1.somafm.com:8032",
-				"http://uwstream2.somafm.com:8032",
-				"http://ice.somafm.com/groovesalad"
-		]
 		
 		//------------------
 		// contructor
@@ -35,24 +30,40 @@ package com.somafm {
 			this.stage.align = StageAlign.TOP_LEFT;
 			this.stage.addEventListener(Event.RESIZE, _handleRedraw);
 			
-			_player = new AudioPlayer();
-			_player.addEventListener(PlayerEvent.PLAYING_CHANGED, _handlePlayerChanged);
+			this.addEventListener(Event.ADDED_TO_STAGE, function (e:Event):void {
+				_player = new AudioPlayer();
+				_player.addEventListener(PlayerEvent.PLAYING_CHANGED, _handlePlayerChanged);
+				
+				_controlBar = new ControlBar(stage.stageWidth, stage.stageHeight);
+				_controlBar.enabled = false;
+				addChild(_controlBar);
+				
+				_controlBar.addEventListener(ControlEvent.PLAY, _handlePlayEvent);
+				_controlBar.addEventListener(ControlEvent.PAUSE, _handlePauseEvent);
+				_controlBar.addEventListener(ControlEvent.STOP, _handleStopEvent);
+				
+				_controlBar.addEventListener(ControlEvent.MUTE, _handleMuteEvent);
+				_controlBar.addEventListener(ControlEvent.UNMUTE, _handleUnmuteEvent);
+				
+				_controlBar.addEventListener(ControlEvent.MAX_VOL, _handlemaxVolEvent);
+				_controlBar.addEventListener(ControlEvent.SET_VOL, _handleSetVolEvent);
+
+				if (ExternalInterface.available) {
+					loadStreams(ExternalInterface.call("getStreams"));
+				}
+
+			});
 			
-			_player.loadStreams(_streams);
-			
-			_controlBar = new ControlBar(stage.stageWidth, stage.stageHeight-100);
-			_controlBar.y = 100;
-			addChild(_controlBar);
-			
-			_controlBar.addEventListener(ControlEvent.PLAY, _handlePlayEvent);
-			_controlBar.addEventListener(ControlEvent.PAUSE, _handlePauseEvent);
-			_controlBar.addEventListener(ControlEvent.STOP, _handleStopEvent);
-			
-			_controlBar.addEventListener(ControlEvent.MUTE, _handleMuteEvent);
-			_controlBar.addEventListener(ControlEvent.UNMUTE, _handleUnmuteEvent);
-			
-			_controlBar.addEventListener(ControlEvent.MAX_VOL, _handlemaxVolEvent);
-			_controlBar.addEventListener(ControlEvent.SET_VOL, _handleSetVolEvent);
+		}
+		
+		//------------------
+		// public functions
+		//------------------
+		public function loadStreams(streams:Array):void {
+			if (streams && streams.length > 0) {
+				_controlBar.enabled = true;
+				_player.loadStreams(streams);		
+			}
 		}
 		
 		//------------------
@@ -89,14 +100,17 @@ package com.somafm {
 		
 		private function _handleMuteEvent(e:ControlEvent):void {
 			_player.toggleMute(true);
+			_controlBar.setVolume(_player.volume);
 		}
 		
 		private function _handleUnmuteEvent(e:ControlEvent):void {
 			_player.toggleMute(false);
+			_controlBar.setVolume(_player.volume);
 		}
 		
 		private function _handlemaxVolEvent(e:ControlEvent):void {
 			_player.setVol(1);
+			_controlBar.setVolume(_player.volume);
 		}
 		
 		private function _handleSetVolEvent(e:ControlEvent):void {

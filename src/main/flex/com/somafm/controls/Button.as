@@ -8,6 +8,9 @@ package com.somafm.controls {
 		//------------------
 		// public vars
 		//------------------	
+		public static const BTN_WIDTH:Number = 50;
+		public static const BTN_HEIGHT:Number = 50;
+		
 		public function get backgroundColor():uint {
 			return _backgroundColor;
 		}
@@ -49,7 +52,7 @@ package com.somafm.controls {
 		private var _iconColor:uint = 0x767676;
 		private var _iconOverColor:uint = 0xFFFFFF;
 		
-		private var _backgroundColor:uint = 0xCCCCCC;
+		private var _backgroundColor:uint = 0xFF0000;
 		private var _backgroundAlpha:Number = 0;
 		private var _icon:Bitmap;
 
@@ -79,8 +82,9 @@ package com.somafm.controls {
 		//------------------
 		public function redraw():void {
 			
-			this.graphics.beginFill(_backgroundColor);
-			this.graphics.drawRect(x, y, 50, 50);
+			this.graphics.clear();
+			this.graphics.beginFill(_backgroundColor, _backgroundAlpha);
+			this.graphics.drawRect(x, y, BTN_WIDTH, BTN_HEIGHT);
 			this.graphics.endFill();
 			
 			if (_icon) {

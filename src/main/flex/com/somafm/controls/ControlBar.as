@@ -25,11 +25,21 @@ package com.somafm.controls {
 		//------------------
 		// public vars
 		//------------------			
-		public var backgroundColor:uint = 0xcccccc;
+		public var backgroundColor:uint = 0x282828;
 		
 		public var hGap:Number = 10;
 		public var marginLeft:Number = 0;
 		public var marginRight:Number = 0;
+		
+		public function get enabled():Boolean {
+			return _enabled;
+		}
+		
+		public function set enabled(val:Boolean):void {
+			_enabled = val;
+			this.alpha = _enabled ? 1 : .4;
+			this.mouseEnabled = this.mouseChildren = val;
+		}
 		
 		public function set isPlaying(val:Boolean):void {
 			_isPlaying = val;
@@ -52,6 +62,7 @@ package com.somafm.controls {
 		private var _volSlider:VolumeSlider;
 		private var _maxBtn:Button;
 		
+		private var _enabled:Boolean = true;
 		private var _isPlaying:Boolean = false;
 		private var _isMuted:Boolean = false;
 		
@@ -112,13 +123,11 @@ package com.somafm.controls {
 				_h = height;
 			}
 
+			this.graphics.clear();
 			this.graphics.beginFill(backgroundColor);
-			this.graphics.drawRect(x, y, width, height);
+			this.graphics.drawRoundRect(x, y, width, height, 6, 6);
 			this.graphics.endFill();
 
-			
-			_playBtn.width = _playBtn.height = 50;
-			_pauseBtn.width = _pauseBtn.height = 50;
 			
 			_playBtn.x = _pauseBtn.x = x + marginRight;
 			_playBtn.y = _pauseBtn.y = (height - _playBtn.height) / 2;
@@ -132,6 +141,8 @@ package com.somafm.controls {
 			_muteVolBtn.visible = !_isMuted;
 			_unmuteVolBtn.visible = _isMuted;
 			
+			_volSlider.width = 200;
+			
 			_volSlider.x = _muteVolBtn.x + _muteVolBtn.width + hGap;
 			_volSlider.y = (height - _volSlider.height) / 2;
 			
@@ -139,6 +150,9 @@ package com.somafm.controls {
 			_maxBtn.y = (height - _maxBtn.height) / 2;			
 		}
 		
+		public function setVolume(val:Number):void {
+			_volSlider.setVolume(val);
+		}
 		//------------------
 		// private functions
 		//------------------

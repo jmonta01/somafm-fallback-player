@@ -18,6 +18,10 @@ package com.somafm.audio {
 		public function get isPlaying():Boolean {
 			return true;
 		}
+		
+		public function get volume():Number {
+			return _soundTrans.volume;
+		}
 
 		//------------------
 		// private vars
@@ -61,7 +65,6 @@ package com.somafm.audio {
 		}
 		
 		public function togglePause(val:Boolean):void {
-			log("toggle pause: " + val);
 			if (val) {
 				_lastPos = _soundChannel.position;
 				_soundChannel.stop();
@@ -72,7 +75,7 @@ package com.somafm.audio {
 		}
 		
 		public function stop():void {
-			log("stop");
+			_soundChannel.stop();
 			_sound.close();
 		}
 		
@@ -84,6 +87,7 @@ package com.somafm.audio {
 		public function setVol(val:Number):void {
 			_lastVol = val;
 			_soundTrans.volume = _lastVol;
+			_soundChannel.soundTransform = _soundTrans;
 		}
 
 		//------------------
