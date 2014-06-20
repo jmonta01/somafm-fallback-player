@@ -48,9 +48,9 @@ package com.somafm {
 				_controlBar.addEventListener(ControlEvent.MAX_VOL, _handlemaxVolEvent);
 				_controlBar.addEventListener(ControlEvent.SET_VOL, _handleSetVolEvent);
 
-				if (ExternalInterface.available) {
-					loadStreams(ExternalInterface.call("getStreams"));
-				}
+				var streamsStr:String = stage.loaderInfo.parameters["streams"];
+				var streams:Array = streamsStr.split(",");
+				loadStreams(streams);
 
 			});
 			
